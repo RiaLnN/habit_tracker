@@ -5,7 +5,10 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from app.core import security
 from fastapi.security import HTTPAuthorizationCredentials
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
+from app.database import get_session
+from typing import Annotated
+import jwt
 
 def user_exist(data: UserCreate, session: Session) -> bool:
     res = session.execute(
@@ -46,8 +49,21 @@ def login_user(data: UserCreate, session: Session) -> User | None:
     
     return None
 
-def get_current_user(session: Session, credentials: HTTPAuthorizationCredentials = Depends(security.security)) -> User | None:
+def get_current_user(
+    credentials: Annotated[HTTPAuthorizationCredentials, Depends(security.security)],
+    session: Annotated[Session, Depends(get_session)]
+) -> User:
     token = credentials.credentials
-    payload = security.get_payload(token)
-    user = get_user_by_id(payload.get("user_id"), session)
+    try:
+        payload = security.get_payload(token)
+        user_id = payload.get("user_id")
+        if user_id is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token claims")
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials")
+        
+    user = get_user_by_id(user_id, session)
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+    
     return user

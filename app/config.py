@@ -5,10 +5,11 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite:///./database.db"
     SECRET_KEY: str = ""
     ALGORITHM: str = "HS256"
-    
+
     model_config = SettingsConfigDict(
         env_file=".env",
-        env_file_encoding="utf-8"
+        env_file_encoding="utf-8",
+        case_sensitive=True
     )
 
 settings = Settings()
