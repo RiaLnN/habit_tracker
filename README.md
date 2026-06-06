@@ -1,49 +1,49 @@
 # Habit Tracker API
 
-Лаконичный backend-сервис для отслеживания привычек на FastAPI.
+A concise FastAPI backend service for tracking habits.
 
-## Стек
+## Stack
 - Python
 - FastAPI
 - SQLAlchemy
-- SQLite (по умолчанию)
+- SQLite (default)
 - JWT + bcrypt
 
-## Структура
+## Structure
 ```
 app/
-  core/        # безопасность: хеширование паролей, JWT
-  routes/      # API-роуты (auth, habits)
-  schemas/     # Pydantic-схемы запросов/ответов
-  services/    # бизнес-логика
-  config.py    # настройки приложения и env
-  database.py  # подключение к БД и сессии
-  models.py    # ORM-модели
-  main.py      # точка входа FastAPI
+  core/        # security: password hashing, JWT
+  routes/      # API routes (auth, habits)
+  schemas/     # Pydantic request/response schemas
+  services/    # business logic
+  config.py    # app and environment settings
+  database.py  # database engine and sessions
+  models.py    # ORM models
+  main.py      # FastAPI entry point
 ```
 
-## Запуск
-1. Установить зависимости:
+## Run
+1. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-2. Создать `.env` в корне проекта:
+2. Create `.env` in the project root:
    ```env
    DATABASE_URL=sqlite:///./database.db
    SECRET_KEY=your_secret_key
    ALGORITHM=HS256
    ```
-3. Запустить приложение:
+3. Start the app:
    ```bash
    uvicorn app.main:app --reload
    ```
 
 ## API
-Подробная интерактивная документация: `/docs`.
+Interactive API docs: `/docs`.
 
-- `POST /auth/register` — регистрация пользователя
-- `POST /auth/login` — вход и получение токена
-- `POST /habits` — создание привычки (нужен Bearer-токен)
-- `GET /habits` — список привычек пользователя
-- `POST /habits/{habit_id}/check` — отметить привычку за сегодня
-- `GET /habits/{habit_id}/stats` — получить текущий streak
+- `POST /auth/register` — register a user
+- `POST /auth/login` — log in and receive a token
+- `POST /habits` — create a habit (auth token required)
+- `GET /habits` — get the user's habits
+- `POST /habits/{habit_id}/check` — mark a habit as completed for today
+- `GET /habits/{habit_id}/stats` — get current streak
